@@ -30,18 +30,18 @@ public class ManiArquivo {
 
     public ArrayList<String[]> carregarDias() throws FileNotFoundException {
 
-        Scanner ler = new Scanner("b.txt");
+        Scanner ler = new Scanner("periodos.txt");
         String nome = ler.nextLine();
         String ab[];
         ArrayList<String[]> ProfessorTemp = new ArrayList<String[]>();
 
-        try (BufferedReader br = new BufferedReader(new FileReader("b.txt"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("periodos.txt"))) {
 
             String sCurrentLine;
             while ((sCurrentLine = br.readLine()) != null) {
                 ab = sCurrentLine.split(Pattern.quote(","));
                 ProfessorTemp.add(ab);
-                System.out.println(sCurrentLine);
+              // System.out.println(sCurrentLine);
             }
 
         } catch (IOException e) {
@@ -50,27 +50,14 @@ public class ManiArquivo {
         return ProfessorTemp;
     }
 
-    /* Scanner Scanner = new Scanner(new FileReader("b.txt")).useDelimiter("\\,");
-
-         while (scanner.hasNext()) {
-
-            String Nome = scanner.next();
-            Nome = Nome.replaceAll("(\\r|\\n)", "");
-            a = Integer.parseInt(scanner.next());
-
-            if (Nome.equalsIgnoreCase(ProfessorNome)) {
-                return a;
-return Periodos.length;
-            }
-            i++;
-        }*/
     public ArrayList< String> carregarProfessor() throws FileNotFoundException {
         ArrayList<String[]> ProfessorTemp = new ArrayList<String[]>();
 
-        Scanner scanner = new Scanner(new FileReader("a.txt")).useDelimiter("\\,");
+        ManiLista Listas = new ManiLista();
+        Scanner scanner = new Scanner(new FileReader("professores.txt")).useDelimiter("\\,");
         int x = 0;
         String[] Periodos;
-        Scanner ler = new Scanner("a.txt");
+        Scanner ler = new Scanner("professores.txt");
         String nome = ler.nextLine();
 
         while (scanner.hasNext()) {
@@ -85,7 +72,10 @@ return Periodos.length;
             Professor p = new Professor(Nome, Segunda, Terça, Quarta, Quinta, Sexta);
             //  p.DiasAulas = carregarDias(Nome);
             ProfessorTemp = carregarDias();
-            ArrayList <Integer> PeriodosLista = new ArrayList <Integer>();
+            int DiasTemp;
+
+            ArrayList<Integer> PeriodosLista = new ArrayList<Integer>();
+            String DiasAulasTemp;
             for (int u = 0; u < ProfessorTemp.size(); u++) {
                 Periodos = ProfessorTemp.get(u);
                 if (Periodos[0].equalsIgnoreCase(Nome)) {
@@ -99,13 +89,16 @@ return Periodos.length;
                         PeriodosLista.add(PeriodosTemp[i]);
                     }
                     p.Periodos = PeriodosLista;
-                    p.DiasAulas = PeriodosTemp.length;
+                    DiasAulasTemp = Listas.ProfessorParaLista(p);
+
+                    DiasTemp = ContadorLetras(DiasAulasTemp);
+                    p.DiasAulas = DiasTemp;
                 }
 
             }
 
             ProfessoresAulas.add(p);
-            //System.out.println(ProfessoresAulas.get(x).Nome);
+
             x++;
 
         }

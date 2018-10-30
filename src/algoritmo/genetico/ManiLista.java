@@ -53,7 +53,7 @@ public class ManiLista {
     public String DiasAulas(Professor professor) {
         String aulas = "Professor: " + professor.Nome + " terá aulas nos dias: ";
         if (!"0".equals(professor.Segunda)) {
-            aulas = aulas + "Segunda-Feira, ";
+            aulas = aulas + "Segunda-Feira,";
         }
         if (!"0".equals(professor.Terca)) {
             aulas = aulas + "Terca-Feira, ";
@@ -77,11 +77,6 @@ public class ManiLista {
         for (int i = 0; i < Professores.size(); i++) {
             AulasTotais = AulasTotais + Professores.get(i).DiasAulas;
         }
-
-        /* if (AulasTotais == 0) {
-            System.out.println("Todos os professores não tem dias disponiveis para dar aulas");
-            System.exit(0);
-        }*/
         return AulasTotais;
     }
 
@@ -172,22 +167,6 @@ public class ManiLista {
         }
     }
 
-
-    /* int DiasSolucao[] = new int[ManipularArquivos.getProfessor().size()];
-        //int Opcoes[] = new int[TamanhoVetor];
-        int separador = StringSerBuscadoLetra.length() / ManipularArquivos.getProfessor().size(); // 10/2
-        //int x = 0;
-
-        for (int y = 0; y < ManipularArquivos.getProfessor().size(); y++) { // 2x
-            for (int i = 0; i < separador; i++) { // 5x
-                if (StringSerBuscadoLetra.charAt(i) == '1') {
-                    // Opcoes[x] = i;
-                    DiasSolucao[y] = DiasSolucao[y] + 1;
-                    // x++;
-
-                }
-            }
-        }        //  return Opcoes;*/
     public int PrimeiroUm(String Frase, char Letra) {
         int posicaoUm;
         if (Frase == null) {
@@ -202,54 +181,96 @@ public class ManiLista {
         return 0;
     }
 
-    public String EncontrarCaracter(String Frase, ArrayList<Integer> Periodos) {
+    public String EncontrarCaracter(String Frase, ArrayList<Integer> Periodos, int prof) { // Validador se o resultado é valido
         int posicaoUm;
         int[] vezesAparece = new int[Periodos.size()];
+        ManiArquivo Arquivo = new ManiArquivo();
+        ArrayList< Professor> ProfessoresAulas = Arquivo.getProfessor();
+        Random gerador = new Random();
 
         for (int x = 0; x < Periodos.size(); x++) {
 
-            for (int i = 0; i < Frase.length(); i++) {
+            for (int i = 0; i < Frase.length(); i++) { // Roda a quantidade de vezes de periodos que o professor tem
                 String temp = String.valueOf(Periodos.get(x));
 
-                if (Frase.charAt(i) == temp.charAt(0)) {
+                if (Frase.charAt(i) == temp.charAt(0)) { // Compara cada caracter da Frase com o periodo I do professor
                     vezesAparece[x]++;
-                }
-
-                if (vezesAparece[x] > 1) {
-
-                    for (int u = 0; u < vezesAparece.length; u++) {
-                        if (vezesAparece[u] < 1) {
-
-                            // Frase.charAt(PrimeiroUm(Frase, (char) vezesAparece[u])) = String.valueOf(vezesAparece[u]);
-                            temp = String.valueOf(Periodos.get(x));// Valor a ser inserido
-                            int separador =  EncontrarLetraEspecifica(Frase, temp.charAt(0));
-                            
-                            Frase = Frase.substring(0,separador) + String.valueOf(Periodos.get(u)) + Frase.substring(separador+1, Frase.length());
-
-                            //posicaoUm = Frase.lastIndexOf(temp.charAt(0));
-                            //Frase = Frase.replaceFirst(temp2, temp);
-
-                            vezesAparece[u]++;
-                        }
-
-                    }
-                    /*  for (int u = 0; u < vezesAparece.length; u++) {
-                        if (vezesAparece[x] > 1) {
-                            String temp2 = String.valueOf(Periodos.get(x));
-                            Frase = Frase.replaceFirst(temp2, "0");
-                            vezesAparece[u]++;
-                        }
-                    }*/
-
-                }
-                if (vezesAparece[x] > 1) {
-                    Frase = Frase.replaceFirst(String.valueOf(Periodos.get(x)), "0");
-
                 }
 
             }
 
         }
+       /* for (int x = 0; x < Periodos.size(); x++) {
+            for (int i = 0; i < Periodos.size()-i; i++) {
+                if (Periodos.get(i) == Periodos.get(x) && vezesAparece[x] > 1) {
+                    vezesAparece[i] = 0;
+                }
+            }
+        }*/
+        for (int x = 0; x < vezesAparece.length; x++) {
+
+            if (vezesAparece[x] > 1) {
+
+                String temp = String.valueOf(Periodos.get(x));
+
+                int separador = EncontrarLetraEspecifica(Frase, temp.charAt(0));
+
+                Frase = Frase.substring(0, separador) + "0" + Frase.substring(separador + 1, Frase.length());
+                vezesAparece[x]--;
+
+            }
+
+        }
+        for (int x = 0; x < vezesAparece.length; x++) {
+
+            if (vezesAparece[x] < 1) {
+                String temp = String.valueOf(Periodos.get(x));
+
+                int separador = EncontrarLetraEspecifica(Frase, '0');
+
+                Frase = Frase.substring(0, separador) + String.valueOf(Periodos.get(x)) + Frase.substring(separador + 1, Frase.length());
+                vezesAparece[x]++;
+
+            }
+
+        }
+
+        if (Arquivo.ContadorLetras(Frase) > ProfessoresAulas.get(prof).DiasAulas) {
+            int randomNum = gerador.nextInt(Periodos.size());
+            Frase.replace(Frase.charAt(randomNum), '0');
+        }
         return Frase;
+    }
+
+    public int ValidarQuantidadeLetras(ArrayList Frase) {
+        int pontos = 0;
+
+        for (int i = 0; i < Frase.size(); i++) {
+
+            for (int x = i + 1; x < Frase.size(); x++) {
+
+                if (Frase.get(i).equals(Frase.get(x)) && !Frase.get(i).equals("0")) {
+                    pontos = pontos - 1;
+                }
+            }
+        }
+        return pontos;
+    }
+
+    public int ContarVezesAparece(String Frase, int IndiceProfessor) {
+        ArrayList<Professor> Professores = ManipularArquivos.getProfessor();
+        int vezesQueAparece = 0;
+        int pontos = 0;
+        for (int i = 0; i < Frase.length(); i++) {
+
+            if (Frase.charAt(i) != '0') {
+                vezesQueAparece++;
+            }
+
+        }
+        if (vezesQueAparece < Professores.get(IndiceProfessor).Periodos.size()) {
+            pontos = -1;
+        }
+        return pontos;
     }
 }

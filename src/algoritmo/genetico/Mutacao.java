@@ -40,7 +40,7 @@ public class Mutacao {
             for (int x = 0; x < Populacao[i].length() / 5; x++) {
                 String p = Populacao[i];
 
-                int randomNum = gerador.nextInt(100);
+                int randomNum = gerador.nextInt(10);
                 if (randomNum == 1) {
 
                     String b = p.substring(x * 5, (x * 5) + 5);

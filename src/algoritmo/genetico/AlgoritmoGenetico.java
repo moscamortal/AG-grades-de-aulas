@@ -7,6 +7,7 @@ package algoritmo.genetico;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  *
@@ -43,13 +44,10 @@ public class AlgoritmoGenetico {
         populacao = listas.removerLetras(ListaString); //Retirar tudo q nao for numero do arquivo de texto lido
         Fitness = listas.inverterString(populacao); //Inverte os 0 por 1, para temos a Fitness
 
-        //System.out.println(populacao);
-        //System.out.println(Fitness);
         int primeiraRodada = 0;
 
         int i = 0;
         do { // Validação por 1000 populações
-            //  System.out.println(1);
             do {
                 i++;
                 // System.out.println(2);
@@ -64,7 +62,7 @@ public class AlgoritmoGenetico {
                     Fitness fitness = new Fitness();
 
                     //IndiceMelhor = fitness.SelecionarMaisApto(fitness.CompararFitness(Fitness, PopulacaoAleatoriaInicial, PopulacaoAleatoriaInicial.length, populacao.length()), Fitness, PopulacaoAleatoriaInicial);
-                    IndiceMelhor = fitness.SelecionarMaisApto(Fitness,PopulacaoAleatoriaInicial);
+                    IndiceMelhor = fitness.SelecionarMaisApto(Fitness, PopulacaoAleatoriaInicial);
 
                     //----- Inicio da reprodução 
                     Reproducao repdorucao = new Reproducao();
@@ -80,15 +78,19 @@ public class AlgoritmoGenetico {
                     FitnessMelhor = fitness.FitnessMelhor;
                     Ciclos++;
                     i++;
-          //          System.out.println(Fitness);
+
                 } else if (FitnessMelhor != 0) {
+                    if (i % 5000 == 1) {
+                        PopulacaoPosInicializada = pop.GerarPopulacaoAleatoria(populacao.length(), ManipularArquivos.getProfessor());
+                    }
                     // System.out.println(4);
                     //----- Inicio do Fitness
                     Fitness fitness = new Fitness();
 
-                    IndiceMelhor = fitness.SelecionarMaisApto(Fitness,PopulacaoPosInicializada);
-                    //System.out.println(PopulacaoPosInicializada[IndiceMelhor]);
+                    IndiceMelhor = fitness.SelecionarMaisApto(Fitness, PopulacaoPosInicializada);
 
+                    //System.out.println(PopulacaoPosInicializada[IndiceMelhor]);
+                    FitnessMelhor = fitness.FitnessMelhor;
                     //---- Inicio da Reprodução
                     Reproducao repdorucao = new Reproducao();
                     PopulacaoPosInicializada = repdorucao.Reproduzir(PopulacaoPosInicializada[IndiceMelhor], PopulacaoPosInicializada, IndiceMelhor);
@@ -99,81 +101,61 @@ public class AlgoritmoGenetico {
                     String[] Mutar = mutacao.Mutar(PopulacaoPosInicializada);
 
                     //----- Validação da Fitness
+                    IndiceMelhor = fitness.SelecionarMaisApto(Fitness, PopulacaoPosInicializada);
                     FitnessMelhor = fitness.FitnessMelhor;
                     Ciclos++;
-                    //i++;
-                    //System.out.println(Fitness);
-                    //  System.out.println(PopulacaoPosInicializada[IndiceMelhor]);
-                }
-                /*if (!PopulacaoPosInicializada[IndiceMelhor].equals(Fitness) && FitnessMelhor == 0) {
-                    FitnessMelhor++;
-                }*/
-                //System.out.println("Ciclos " + i);
 
-            } while (FitnessMelhor != 0 && i < 1000000);
-        } while (FitnessMelhor != 0 && i < 1000000);
+                }
+
+            } while (FitnessMelhor != 0 && i < 100000);
+        } while (FitnessMelhor != 0 && i < 100000);
 
         if (FitnessMelhor == 0) {
 
             ProfessoresAulas = ManipularArquivos.getProfessor();
             ArrayList< Professor> ProfessorImpresso = new ArrayList();
 
-            System.out.println("VocÊ chjegou a resultado ideal");
-            System.out.println(PopulacaoPosInicializada[IndiceMelhor]);
-            System.out.println("Em " + Ciclos + " Ciclos");
+            System.out.println("VocÊ chjegou a resultado ideal\n");
+            //System.out.println(PopulacaoPosInicializada[IndiceMelhor]);
+            System.out.println("Em " + Ciclos + " Ciclos\n");
 
             int contator = 0;
+            System.out.println("Prof.\t\tSEG\tTER\tQUA\tQUI\tSEX");
+
             for (int var = 0; var < ManiArquivo.ProfessoresAulas.size(); var++) {
-                System.out.println("");
+
                 if (contator == 0) {
+
                     Professor p = listas.StringParaProfessor(PopulacaoPosInicializada[IndiceMelhor].substring(0, 5), ProfessoresAulas.get(var).Nome);
+                    //Professor p = listas.StringParaProfessor(PopulacaoPosInicializada[IndiceMelhor].substring(0, 5), ProfessoresAulas.get(var).Nome);
                     ProfessorImpresso.add(p);
-                    System.out.println(listas.DiasAulas(ProfessorImpresso.get(var)));
+                    /* System.out.println(listas.DiasAulas(ProfessorImpresso.get(var)));
+                     */
+                    System.out.println(p.Nome + "\t\t" + p.Segunda + "\t" + p.Terca + "\t" + p.Quarta + "\t" + p.Quinta + "\t" + p.Sexta);
                     contator = contator + 5;
+
                 } else {
                     Professor p = listas.StringParaProfessor(PopulacaoPosInicializada[IndiceMelhor].substring(contator, contator + 5), ProfessoresAulas.get(var).Nome);
+                    System.out.println(p.Nome + "\t\t" + p.Segunda + "\t" + p.Terca + "\t" + p.Quarta + "\t" + p.Quinta + "\t" + p.Sexta);
                     ProfessorImpresso.add(p);
-                    System.out.println(listas.DiasAulas(ProfessorImpresso.get(var)));
+                    //  System.out.println(listas.DiasAulas(ProfessorImpresso.get(var)));
                     contator = contator + 5;
 
                 }
             }
-            //System.out.println(Fitness);
-            //System.out.println(PopulacaoPosInicializada[IndiceMelhor]);
 
-        } else if (PopulacaoPosInicializada[0].equalsIgnoreCase(Fitness) && FitnessMelhor == 0) {
 
-            ProfessoresAulas = ManipularArquivos.getProfessor();
-            ArrayList< Professor> ProfessorImpresso = new ArrayList();
-
-            System.out.println("VocÊ chjegou a resultado ideal");
-            System.out.println(PopulacaoPosInicializada[IndiceMelhor]);
-            System.out.println("Em " + Ciclos + " Ciclos");
-
-            int contator = 0;
-            for (int var = 0; var < ManiArquivo.ProfessoresAulas.size(); var++) {
-                System.out.println("");
-                if (contator == 0) {
-                    Professor p = listas.StringParaProfessor(Fitness.substring(0, 5), ProfessoresAulas.get(var).Nome);
-                    ProfessorImpresso.add(p);
-                    System.out.println(listas.DiasAulas(ProfessorImpresso.get(var)));
-                    contator = contator + 5;
-                } else {
-                    Professor p = listas.StringParaProfessor(Fitness.substring(contator, contator + 5), ProfessoresAulas.get(var).Nome);
-                    ProfessorImpresso.add(p);
-                    System.out.println(listas.DiasAulas(ProfessorImpresso.get(var)));
-                    contator = contator + 5;
-
-                }
+            /*    for (int u = 0; u < PopulacaoPosInicializada.length; u++) {
+                System.out.println(PopulacaoPosInicializada[u]);
             }
-            System.out.println(Fitness);
-            System.out.println(PopulacaoPosInicializada[0]);
+            System.out.println(IndiceMelhor);
+             */
         } else {
             System.out.println("Não existe solução possivel");
             System.out.println("Em " + i + " Ciclos");
             System.out.println(Fitness);
 
-           for (int u = 0; u < PopulacaoPosInicializada.length; u++) {
+            for (int u = 0; u < PopulacaoPosInicializada.length; u++) {
                 System.out.println(PopulacaoPosInicializada[u]);
             }
             System.out.println("");
@@ -183,5 +165,9 @@ public class AlgoritmoGenetico {
 
         }
 
+        Scanner scanner = new Scanner(System.in);
+        while (!scanner.hasNext()) {
+        }
     }
+
 }

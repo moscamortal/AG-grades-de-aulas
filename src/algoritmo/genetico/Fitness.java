@@ -1,5 +1,7 @@
 package algoritmo.genetico;
 
+import java.util.ArrayList;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -11,26 +13,33 @@ package algoritmo.genetico;
  */
 public class Fitness {
 
+    ManiLista Listas = new ManiLista();
     public static int FitnessMelhor;
     public static int[] VetorPontuacao;
-    
+
     public int SelecionarMaisApto(String FitnessAtual, String Populacao[]) {
-        int Melhor = 0;
+        int[] VetorPontuascao;
+        int IndiceMelhor = 0;
+        int Melhor = -50;
         VetorPontuacao = new int[Populacao.length];
 
         for (int i = 0; i < Populacao.length; i++) {
             VetorPontuacao[i] = Fitness(Populacao[i], FitnessAtual);
         }
 
+        //VetorPontuacao[0] = 0;
         for (int i = 0; i < VetorPontuacao.length; i++) {
 
             if (Melhor < VetorPontuacao[i]) {
-                Melhor = i;
+
+                Melhor = VetorPontuacao[i];
+                IndiceMelhor = i;
             }
         }
 
-        this.FitnessMelhor = VetorPontuacao[Melhor];
-        return Melhor;
+        Fitness.FitnessMelhor = VetorPontuacao[IndiceMelhor];
+        VetorPontuascao = VetorPontuacao;
+        return IndiceMelhor;
 
     }
 
@@ -38,76 +47,60 @@ public class Fitness {
         int pontos = 0;
 
         //perde pontos pelas restricoes de dias
-        for (int i = 0; i < Populacao.length(); i++) {
+        for (int i = 0; i < Populacao.length(); i++) { // Funciona
             int a = Integer.valueOf(String.valueOf(Populacao.charAt(i)));
             int b = Integer.valueOf(String.valueOf(restricoes.charAt(i)));
 
-            if (Integer.valueOf(String.valueOf(Populacao.charAt(i))) > 0 && Integer.valueOf(String.valueOf(restricoes.charAt(i))) == 1) {
+            if (Integer.valueOf(String.valueOf(Populacao.charAt(i))) > 0
+                    && Integer.valueOf(String.valueOf(restricoes.charAt(i))) == 1) {
                 pontos = pontos - 1;
-                //  System.out.println("Pontos por restricoes " + pontos);
             }
         }
+
         //perde pontos pelas restricoes de periodo
-        for (int x = 0; x < Populacao.length(); x++) {
+        ArrayList<String> vetorTemp = new ArrayList();
 
-            for (int j = 0; j < Populacao.length() - 5; j++) {
+        for (int i = 0; i < 5; i++) {
+            for (int x = 0; x < Populacao.length(); x = x + 5) {
+                vetorTemp.add(String.valueOf(Populacao.charAt(x + i)));
+            }
+            pontos = pontos + Listas.ValidarQuantidadeLetras(vetorTemp);
 
-                int a = Integer.valueOf(String.valueOf(Populacao.charAt(j)));
-                int b = Integer.valueOf(String.valueOf(Populacao.charAt(j)));
-                int c = Integer.valueOf(String.valueOf(Populacao.charAt(j + 5)));
-                
-                if (Integer.valueOf(String.valueOf(Populacao.charAt(j))) > 0
-                        && Integer.valueOf(String.valueOf(Populacao.charAt(j)))
-                        == Integer.valueOf(String.valueOf(Populacao.charAt(j + 5)))) {
+            vetorTemp.clear();
+        }
 
+       for (int j = 0; j < Populacao.length() / 5; j++) {
+            String p = Populacao;
+
+            String b = p.substring(j * 5, (j * 5) + 5);
+
+            pontos = pontos + Listas.ContarVezesAparece(b, j);
+
+        }
+
+        /*   while (i < Populacao.length() / 5) {
+
+            for (int x = 5; x < Populacao.length(); x = x + 5) {
+                String a = String.valueOf(Populacao.charAt(i));
+                String b = String.valueOf(Populacao.charAt(i + x));
+
+                if (String.valueOf(Populacao.charAt(i * 5)).equalsIgnoreCase(String.valueOf(Populacao.charAt((i * 5) + 4)))
+                        && !String.valueOf(Populacao.charAt(i)).equalsIgnoreCase("0")) {
                     pontos = pontos - 1;
+
                 }
             }
+
+            i++;
+        }*/
+        if (pontos
+                == 0) {
+            int a = 1;
         }
         return pontos;
     }
 
-    /*blic int[] CompararFitness(String FitnessAtual, String Populacao[], int TamanhoPopulacao, int TamanhoIndividuo) {
-
-        int[] VetorPontuacao = new int[TamanhoPopulacao];
-        int menor = TamanhoPopulacao;
-        int indiceMenor = 0;
-
-        for (int x = 0; x < TamanhoPopulacao; x++) {
-
-            for (int i = 0; i < TamanhoIndividuo; i++) {
-
-                if (Populacao[x].charAt(i) != FitnessAtual.charAt(i)) {
-                    VetorPontuacao[x] = VetorPontuacao[x] + 1;
-                }
-
-            }
-
-        }
-
-        /*if (Populacao[indiceMenor] != FitnessAtual && VetorPontuacao[indiceMenor] == 0) {
-            VetorPontuacao[indiceMenor] = VetorPontuacao[indiceMenor] + 1;
-        }*/
- /* return VetorPontuacao;
+    public int[] getFitness() {
+        return VetorPontuacao;
     }
-
- /* public int SelecionarMaisApto(int VetorAptdao[], String Fitness, String[] Populacao) {
-
-        int IndiceMelhor = 0;
-        int Melhor = VetorAptdao[0];
-        for (int i = 0; i < VetorAptdao.length; i++) {
-
-            if (Melhor > VetorAptdao[i]) {
-                Melhor = VetorAptdao[i];
-                IndiceMelhor = i;
-            }     
-        }
-        
-        if (FitnessMelhor == 0 && !Populacao[IndiceMelhor].equalsIgnoreCase(Fitness) && Melhor == 0) {
-                FitnessMelhor++;
-            }
-
-        this.FitnessMelhor = Melhor;
-        return IndiceMelhor;
-    }*/
 }

@@ -20,6 +20,8 @@ public class Reproducao {
     ManiArquivo ManipularArquivos = new ManiArquivo();
     ManiLista Listas = new ManiLista();
     public ArrayList< Professor> ProfessoresAulas = ManipularArquivos.getProfessor();
+    Fitness fit = new Fitness();
+    int[] VetorPontuacao = fit.getFitness();
 
     public String[] Reproduzir(String Melhor, String Populacao[], int IndiceMelhor) {
         String NovaPopulacao[] = new String[ManipularArquivos.getProfessor().size() * 5];
@@ -29,18 +31,17 @@ public class Reproducao {
             String[] Controlador = new String[Populacao[i].length() / 5];
             Arrays.fill(Controlador, "");
 
-            VetorPontuacao[i] = 1;
-            
-            //NovaPopulacao[i] = Cruzador(Populacao[IndiceMelhor],Populacao[i]);
+            int MelhorRoletaIndice = Roleta();
+
             for (int x = 0; x < Populacao[i].length() / 5; x++) {
                 String p = Populacao[i];
                 String melhor;
 
                 String b = p.substring(x * 5, (x * 5) + 5);
-                melhor = Populacao[IndiceMelhor].substring(x * 5, (x * 5) + 5);
+                melhor = Populacao[MelhorRoletaIndice].substring(x * 5, (x * 5) + 5);
 
                 Controlador[x] = Cruzador(melhor, b);
-                Controlador[x] = Listas.EncontrarCaracter(Controlador[x], ProfessoresAulas.get(x).Periodos);
+                Controlador[x] = Listas.EncontrarCaracter(Controlador[x], ProfessoresAulas.get(x).Periodos, x);
 
             }
             for (int y = 0; y < Controlador.length; y++) {
@@ -59,24 +60,46 @@ public class Reproducao {
 
         individuoTempMelhor = Melhor.substring(0, randomNum);
         individuoTempNormal = Populacao.substring(randomNum, Populacao.length());
+
         NovoIndividuo = individuoTempMelhor + individuoTempNormal;
 
         return NovoIndividuo;
     }
-    
-    public void Roleta(){
-        int Total=0;
+
+    public int Roleta() {
+        int Total = 0;
+        int TotalRoleta = 0;
+        int RoletaAtual = 0;
+        int IndiceNovoMelhor = 0;
+
         int[] VetorPontuacaoTemp = new int[VetorPontuacao.length];
-        
-        for(int i = 0; i < VetorPontuacao.length; i++){
+
+        for (int i = 0; i < VetorPontuacao.length; i++) {
             Total = Total + VetorPontuacao[i];
         }
-        
-        for(int i = 0; i < VetorPontuacao.length; i++){
-            VetorPontuacaoTemp[i] = Total / VetorPontuacao[i];
+
+        for (int i = 0; i < VetorPontuacao.length; i++) {
+            if (VetorPontuacao[i] == 0) {
+                VetorPontuacaoTemp[i] = Total / -1;
+            } else {
+                VetorPontuacaoTemp[i] = Total / VetorPontuacao[i];
+            }
+
         }
-        
-        
+        for (int i = 0; i < VetorPontuacaoTemp.length; i++) {
+            TotalRoleta = VetorPontuacaoTemp[i] + TotalRoleta;
+        }
+        int randomNum = gerador.nextInt(TotalRoleta);
+
+        for (int i = 0; i < VetorPontuacaoTemp.length; i++) {
+            if (RoletaAtual < randomNum) {
+                RoletaAtual = RoletaAtual + VetorPontuacaoTemp[i];
+                IndiceNovoMelhor = i;
+            } else {
+                return IndiceNovoMelhor;
+            }
+        }
+        return IndiceNovoMelhor;
     }
 
 }
